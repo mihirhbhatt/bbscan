@@ -1,891 +1,108 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>Bug Bounty Search Engine</title>
+    <title>Bug Bounty Recon Toolkit</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            overflow: hidden;
+            background-color: #000;
+            font-family: "Segoe UI", Tahoma, sans-serif;
+            color: #f5f5f5;
+        }
 
-  <style>
-    :root{
-      --bg-1: #070707;
-      --bg-2: #0e0f14;
-      --glass: rgba(255,255,255,0.06);
-      --accent: #6ee7ff;
-      --accent-2: #9b7dff;
-      --muted: rgba(255,255,255,0.65);
-      --shadow: 0 6px 24px rgba(11,13,20,0.6);
-      --radius: 14px;
-    }
+        .background-video {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            z-index: -1;
+            filter: brightness(0.4);
+        }
 
-    /* Page & background */
-    html,body{height:100%;margin:0;font-family:Inter, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;}
-    body{
-      background: radial-gradient(1200px 600px at 10% 20%, rgba(107,70,193,0.12), transparent),
-                  radial-gradient(900px 400px at 90% 80%, rgba(110,231,255,0.06), transparent),
-                  linear-gradient(180deg,var(--bg-1),var(--bg-2));
-      color:#fff;
-      -webkit-font-smoothing:antialiased;
-      -moz-osx-font-smoothing:grayscale;
-      min-height:100vh;
-      display:flex;
-      align-items:stretch;
-      justify-content:center;
-      padding:36px;
-      box-sizing:border-box;
-    }
+        .container {
+            text-align: center;
+            margin-top: 15vh;
+        }
 
-    /* container */
-    .app {
-      width: min(1200px, 96vw);
-      display: grid;
-      grid-template-columns: 1fr 460px;
-      gap: 28px;
-    }
+        h1 {
+            font-size: 2.2em;
+            margin-bottom: 0.5em;
+            color: #00ffcc;
+            letter-spacing: 1px;
+        }
 
-    /* Left - controls and buttons (main) */
-    .panel {
-      background: linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));
-      border-radius: var(--radius);
-      padding: 22px;
-      box-shadow: var(--shadow);
-      border: 1px solid rgba(255,255,255,0.04);
-      backdrop-filter: blur(6px) saturate(120%);
-    }
+        p {
+            color: #ccc;
+            margin-bottom: 1.5em;
+            font-size: 1em;
+        }
 
-    header h1{
-      margin:0;
-      font-size:20px;
-      letter-spacing:0.4px;
-      font-weight:600;
-      color:#ffffff;
-    }
-    header p{
-      margin:8px 0 18px 0;
-      color:var(--muted);
-      font-size:13px;
-    }
+        input[type="text"] {
+            padding: 12px;
+            width: 320px;
+            border: none;
+            border-radius: 8px;
+            font-size: 1em;
+            outline: none;
+            transition: box-shadow 0.3s ease;
+        }
 
-    /* input row */
-    .input-row{
-      display:flex;
-      gap:10px;
-      align-items:center;
-      margin-bottom:18px;
-    }
-    label[for="target"]{
-      font-size:13px;
-      color:var(--muted);
-      display:block;
-      margin-bottom:6px;
-    }
-    .domain-input {
-      flex:1;
-      display:flex;
-      gap:8px;
-      align-items:center;
-    }
-    .domain-input input{
-      width:100%;
-      padding:12px 14px;
-      border-radius:10px;
-      border:1px solid rgba(255,255,255,0.06);
-      background: linear-gradient(180deg, rgba(255,255,255,0.015), rgba(255,255,255,0.01));
-      color:#fff;
-      outline:none;
-      font-size:14px;
-      box-shadow: inset 0 -6px 18px rgba(0,0,0,0.35);
-      transition: box-shadow 180ms ease, transform 180ms ease, border-color 180ms ease;
-    }
-    .domain-input input:focus{
-      border-color: rgba(155,125,255,0.9);
-      box-shadow: 0 6px 30px rgba(155,125,255,0.09), inset 0 -8px 18px rgba(0,0,0,0.45);
-      transform: translateY(-1px);
-    }
-    .domain-input button{
-      padding:10px 12px;
-      border-radius:10px;
-      border: none;
-      background: linear-gradient(90deg,var(--accent),var(--accent-2));
-      color:#071018;
-      font-weight:600;
-      cursor:pointer;
-      box-shadow: 0 8px 22px rgba(107,70,193,0.18);
-      transition: transform .15s ease, filter .15s ease;
-    }
-    .domain-input button:active{ transform: translateY(1px) scale(.995); }
-    .domain-input .clear{
-      background:transparent;color:var(--muted);border:1px solid rgba(255,255,255,0.04);padding:8px 10px;font-weight:500;
-    }
+        input[type="text"]:focus {
+            box-shadow: 0 0 10px #00ffcc;
+        }
 
-    /* buttons grid */
-    .buttons-grid {
-      display:grid;
-      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-      gap:12px;
-      margin-top:6px;
-    }
+        button {
+            padding: 12px 22px;
+            margin-left: 8px;
+            background-color: #00ffcc;
+            color: #000;
+            border: none;
+            border-radius: 8px;
+            font-size: 1em;
+            cursor: pointer;
+            transition: background-color 0.3s, transform 0.2s;
+        }
 
-    /* button style */
-    .search-btn {
-      -webkit-tap-highlight-color: transparent;
-      position:relative;
-      display:flex;
-      gap:12px;
-      align-items:center;
-      padding:12px 14px;
-      border-radius:12px;
-      border:1px solid rgba(255,255,255,0.06);
-      background: linear-gradient(180deg, rgba(255,255,255,0.01), rgba(255,255,255,0.005));
-      color:var(--muted);
-      font-size:14px;
-      cursor:pointer;
-      transition: transform .18s cubic-bezier(.2,.9,.2,1), box-shadow .18s ease, background .18s ease;
-      overflow:hidden;
-      text-align:left;
-      min-height:52px;
-      box-shadow: 0 6px 18px rgba(2,6,23,0.45);
-    }
+        button:hover {
+            background-color: #00e6b8;
+            transform: scale(1.05);
+        }
 
-    .search-btn .title{
-      font-weight:600;
-      color: #fff;
-      font-size:13px;
-    }
-    .search-btn .desc{
-      font-size:12px;
-      color:var(--muted);
-      margin-top:4px;
-    }
+        small {
+            display: block;
+            margin-top: 2em;
+            color: #888;
+            font-size: 0.85em;
+        }
 
-    .search-btn::after{
-      content:'';
-      position:absolute;
-      right:-30%;
-      top:-40%;
-      width:120%;
-      height:120%;
-      background:radial-gradient(closest-side, rgba(155,125,255,0.06), transparent 40%);
-      transform:rotate(12deg);
-      transition:opacity .25s ease, transform .25s ease;
-      opacity:0;
-      pointer-events:none;
-    }
-
-    .search-btn:hover{
-      transform: translateY(-6px) scale(1.01);
-      box-shadow: 0 20px 40px rgba(11,13,20,0.6), 0 2px 6px rgba(155,125,255,0.06);
-      color:#fff;
-      border-color: rgba(155,125,255,0.18);
-    }
-    .search-btn:hover::after{ opacity:1; transform:translateX(-6px) rotate(10deg); }
-
-    /* small icon */
-    .search-btn .badge {
-      margin-left:auto;
-      background: linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));
-      border-radius:8px;
-      padding:8px;
-      display:flex;
-      align-items:center;
-      justify-content:center;
-      min-width:44px;
-      min-height:44px;
-      border:1px solid rgba(255,255,255,0.03);
-    }
-    .search-btn:focus{ outline: 3px solid rgba(110,231,255,0.12); outline-offset:2px; }
-
-    /* right-side panel: info / video preview */
-    .side {
-      display:flex;
-      flex-direction:column;
-      gap:16px;
-      align-items:stretch;
-    }
-    .card {
-      background: linear-gradient(180deg, rgba(255,255,255,0.015), rgba(255,255,255,0.008));
-      border-radius:12px;
-      padding:14px;
-      border:1px solid rgba(255,255,255,0.04);
-      box-shadow: 0 8px 26px rgba(0,0,0,0.55);
-    }
-    .card h3{ margin:0 0 6px 0; font-size:14px; color:#fff; }
-    .card p{ margin:0; color:var(--muted); font-size:13px; line-height:1.45; }
-
-    /* modal */
-    .modal-backdrop {
-      position:fixed; inset:0; background:rgba(2,4,8,0.6); display:none; align-items:center; justify-content:center; z-index:1200;
-    }
-    .modal {
-      width:min(880px,92vw);
-      background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));
-      border-radius:12px;
-      padding:18px;
-      border:1px solid rgba(255,255,255,0.04);
-      box-shadow: 0 20px 60px rgba(0,0,0,0.6);
-      color:#fff;
-    }
-    .modal h4{ margin:0 0 10px 0; font-size:16px; }
-    .cmd {
-      background: rgba(0,0,0,0.4);
-      border-radius:8px;
-      padding:10px;
-      margin-bottom:10px;
-      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, "Roboto Mono", monospace;
-      font-size:13px;
-      display:flex;
-      gap:8px;
-      align-items:center;
-      justify-content:space-between;
-    }
-    .cmd pre { margin:0; white-space:pre-wrap; word-break:break-all; color:#e6faff; }
-    .cmd button{ background:transparent; border:1px solid rgba(255,255,255,0.06); padding:6px 8px; border-radius:8px; color:var(--muted); cursor:pointer; }
-    .notice { color:#ffd6a5; font-size:13px; margin-bottom:8px; }
-
-    /* responsive */
-    @media (max-width:980px){
-      .app{ grid-template-columns: 1fr; }
-      .side{ order:2; }
-    }
-
-    /* tooltip (for long buttons) */
-    .search-btn[data-tooltip]:hover::before{
-      content: attr(data-tooltip);
-      position: absolute;
-      left: 12px;
-      top: -40px;
-      background: rgba(12,14,20,0.85);
-      color:#fff;
-      padding:6px 10px;
-      border-radius:8px;
-      font-size:12px;
-      white-space:nowrap;
-      box-shadow: 0 8px 30px rgba(0,0,0,0.6);
-    }
-
-    /* simple footer */
-    footer{ text-align:center; margin-top:18px; color:var(--muted); font-size:12px; }
-
-    /* small helper row title */
-    .section-title { margin:10px 0 6px 0; color:var(--muted); font-size:13px; font-weight:600; }
-  </style>
+        kbd {
+            background: #333;
+            padding: 2px 6px;
+            border-radius: 4px;
+            color: #fff;
+        }
+    </style>
 </head>
 <body>
-  <div class="app" role="application" aria-label="Bug Bounty Search UI">
-    <!-- MAIN PANEL -->
-    <section class="panel" aria-labelledby="mainTitle">
-      <header>
-        <h1 id="mainTitle">Search Engine for Bug Bounty Hunters</h1>
-        <p>Enter a domain and pick queries — results open in a new tab.</p>
-      </header>
+    <video autoplay muted loop class="background-video">
+        <source src="cyber-bg.mp4" type="video/mp4">
+    </video>
 
-      <div>
-        <label for="target">Target domain</label>
-        <div class="input-row">
-          <div class="domain-input" style="flex:1">
-            <input id="target" name="target" type="text" placeholder="example.com" aria-label="Target domain" />
-            <button id="goBtn" title="Run a default discovery search">Search</button>
-            <button id="clearBtn" class="clear" title="Clear domain">Clear</button>
-          </div>
-        </div>
-      </div>
+    <div class="container">
+        <h1>Bug Bounty Recon Toolkit</h1>
+        <p>Enter a domain to explore reconnaissance and discovery tools.</p>
 
-      <!-- Buttons grid: each uses your googleSearch(number) -->
-      <div class="buttons-grid" id="buttonsGrid" aria-hidden="false">
-        <!-- Existing example items -->
-        <button class="search-btn" onclick="googleSearch(1)" data-tooltip="Find directory listings (index of)">
-          <div>
-            <div class="title">Directory listing</div>
-            <div class="desc">intitle:index.of</div>
-          </div>
-          <div class="badge" aria-hidden="true">1</div>
-        </button>
+        <input type="text" id="domainInput" placeholder="example.com">
+        <button id="goBtn">Run</button>
 
-        <button class="search-btn" onclick="googleSearch(2)" data-tooltip="Exposed configuration files">
-          <div>
-            <div class="title">Exposed configuration files</div>
-            <div class="desc">.xml .conf .ini ...</div>
-          </div>
-          <div class="badge">2</div>
-        </button>
-
-        <!-- ... other existing buttons ... -->
-
-        <!-- NEW: Pentest tools group (online services & command templates) -->
-        <div class="section-title">Pentest tools</div>
-
-        <!-- Online reconnaissance services -->
-        <button class="search-btn" onclick="openService('shodan')" data-tooltip="Open Shodan results for target">
-          <div>
-            <div class="title">Shodan</div>
-            <div class="desc">Host & service discovery</div>
-          </div>
-          <div class="badge">S</div>
-        </button>
-
-        <button class="search-btn" onclick="openService('censys')" data-tooltip="Open Censys domain search">
-          <div>
-            <div class="title">Censys</div>
-            <div class="desc">Certificates & hosts</div>
-          </div>
-          <div class="badge">C</div>
-        </button>
-
-        <button class="search-btn" onclick="openService('crtsh')" data-tooltip="Find certificate-subdomains (crt.sh)">
-          <div>
-            <div class="title">crt.sh</div>
-            <div class="desc">Certificates / subdomains</div>
-          </div>
-          <div class="badge">CRT</div>
-        </button>
-
-        <button class="search-btn" onclick="openService('ssllabs')" data-tooltip="SSL/TLS analysis (SSL Labs)">
-          <div>
-            <div class="title">SSL Labs</div>
-            <div class="desc">TLS configuration test</div>
-          </div>
-          <div class="badge">SSL</div>
-        </button>
-
-        <button class="search-btn" onclick="openService('urlscan')" data-tooltip="Scan URL with urlscan.io">
-          <div>
-            <div class="title">urlscan.io</div>
-            <div class="desc">Active URL analysis</div>
-          </div>
-          <div class="badge">U</div>
-        </button>
-
-        <button class="search-btn" onclick="openService('virustotal')" data-tooltip="VirusTotal domain / URL lookup">
-          <div>
-            <div class="title">VirusTotal</div>
-            <div class="desc">Malware / URL context</div>
-          </div>
-          <div class="badge">VT</div>
-        </button>
-
-        <button class="search-btn" onclick="openService('builtwith')" data-tooltip="BuiltWith technology lookup">
-          <div>
-            <div class="title">BuiltWith</div>
-            <div class="desc">Tech & frameworks</div>
-          </div>
-          <div class="badge">B</div>
-        </button>
-
-        <button class="search-btn" onclick="openService('whois')" data-tooltip="WHOIS lookup">
-          <div>
-            <div class="title">WHOIS</div>
-            <div class="desc">Registrar & contact info</div>
-          </div>
-          <div class="badge">W</div>
-        </button>
-
-        <button class="search-btn" onclick="openService('securitytrails')" data-tooltip="SecurityTrails domain data">
-          <div>
-            <div class="title">SecurityTrails</div>
-            <div class="desc">DNS history & records</div>
-          </div>
-          <div class="badge">ST</div>
-        </button>
-
-        <!-- Local command templates (open modal) -->
-        <button class="search-btn" onclick="showCmdModal('nmap')" data-tooltip="Show Nmap command templates">
-          <div>
-            <div class="title">Nmap (local)</div>
-            <div class="desc">Port/service enumeration (templates)</div>
-          </div>
-          <div class="badge">N</div>
-        </button>
-
-        <button class="search-btn" onclick="showCmdModal('nikto')" data-tooltip="Show Nikto command templates">
-          <div>
-            <div class="title">Nikto (local)</div>
-            <div class="desc">Webserver vulnerability scan</div>
-          </div>
-          <div class="badge">Ni</div>
-        </button>
-
-        <button class="search-btn" onclick="showCmdModal('sqlmap')" data-tooltip="Show sqlmap command templates">
-          <div>
-            <div class="title">sqlmap (local)</div>
-            <div class="desc">SQL injection testing templates</div>
-          </div>
-          <div class="badge">SQL</div>
-        </button>
-
-        <button class="search-btn" onclick="showCmdModal('dirb')" data-tooltip="Show directory fuzzing templates">
-          <div>
-            <div class="title">Dirb / ffuf (local)</div>
-            <div class="desc">Content discovery templates</div>
-          </div>
-          <div class="badge">D</div>
-        </button>
-
-        <button class="search-btn" onclick="showCmdModal('whatweb')" data-tooltip="Show WhatWeb / Wappalyzer commands">
-          <div>
-            <div class="title">WhatWeb / Wappalyzer</div>
-            <div class="desc">Identify tech & frameworks</div>
-          </div>
-          <div class="badge">W</div>
-        </button>
-
-      </div>
-
-      <footer class="panel" style="margin-top:12px; padding:12px;">
-        <small>Tip: press <kbd>Tab</kbd> to focus buttons, use <kbd>Enter</kbd> to open results. Only test systems you are authorized to test.</small>
-      </footer>
-    </section>
-
-    <!-- SIDE PANEL -->
-    <aside class="side">
-      <div class="card">
-        <h3>About</h3>
-        <p>
-          This UI groups different target searches and opens the results in a new tab. Keep responsible disclosure and permissions in mind — only test targets you are authorized for.
-        </p>
-      </div>
-
-      <div class="card" aria-hidden="true">
-        <h3>Quick actions</h3>
-        <p style="margin-top:8px;">
-          Use <strong>Clear</strong> to empty the domain, or type a domain and press <strong>Search</strong> for a quick discovery search.
-        </p>
-      </div>
-    </aside>
-  </div>
-
-  <!-- Command modal (hidden by default) -->
-  <div id="modalBackdrop" class="modal-backdrop" role="dialog" aria-modal="true" aria-hidden="true">
-    <div class="modal" role="document" aria-labelledby="modalTitle">
-      <h4 id="modalTitle">Command templates — Authorized testing only</h4>
-      <div class="notice">These are example command templates for local tools. Do not run scans against systems you do not have explicit permission to test.</div>
-
-      <div id="cmdList">
-        <!-- commands will be injected here -->
-      </div>
-
-      <div style="display:flex; gap:8px; justify-content:flex-end; margin-top:8px;">
-        <button onclick="closeModal()" aria-label="Close modal">Close</button>
-      </div>
+        <small>
+            Use <kbd>Tab</kbd> to navigate, <kbd>Enter</kbd> to run queries.<br>
+            Test only systems you are authorized to access.
+        </small>
     </div>
-  </div>
-
-  <script>
-    // small UX helpers
-    const input = document.getElementById('target');
-    document.getElementById('clearBtn').addEventListener('click', () => input.value = '');
-    document.getElementById('goBtn').addEventListener('click', () => {
-      // run a default search (I choose 18 — find subdomains)
-      googleSearch(18);
-    });
-
-    // allow Enter key to trigger default search
-    input.addEventListener('keydown', (e) => {
-      if (e.key === 'Enter') {
-        e.preventDefault();
-        googleSearch(18);
-      }
-    });
-
-    /* -------------------------------------------------------------------------
-       Existing googleSearch(type) preserved and slightly trimmed comments
-       ------------------------------------------------------------------------- */
-    function googleSearch(type) {
-        var targetDomain = document.getElementById('target').value;
-
-        if (!targetDomain) {
-            alert('Please enter a target domain.');
-            return;
-        }
-
-        var searchQuery = 'site:' + targetDomain;
-
-        switch (type) {
-            case 1:
-                searchQuery += ' intitle:index.of';
-                break;
-            case 2:
-                searchQuery += ' ext:xml | ext:conf | ext:cnf | ext:reg | ext:inf | ext:rdp | ext:cfg | ext:txt | ext:ora | ext:ini';
-                break;
-            case 3:
-                searchQuery += ' ext:sql | ext:dbf | ext:mdb';
-                break;
-            case 4:
-                searchQuery += ' ext:log';
-                break;
-            case 5:
-                searchQuery += ' ext:bkf | ext:bkp | ext:bak | ext:old | ext:backup';
-                break;
-            case 6:
-                searchQuery += ' inurl:login';
-                break;
-            case 7:
-                searchQuery += ' intext:"sql syntax near" | intext:"syntax error has occurred" | intext:"incorrect syntax near" | intext:"unexpected end of SQL command" | intext:"Warning: mysql_connect()" | intext:"Warning: mysql_query()" | intext:"Warning: pg_connect()"';
-                break;
-            case 8:
-                searchQuery += ' ext:doc | ext:docx | ext:odt | ext:pdf | ext:rtf | ext:sxw | ext:psw | ext:ppt | ext:pptx | ext:pps | ext:csv';
-                break;
-            case 9:
-                searchQuery += ' ext:php intitle:phpinfo "published by the PHP Group"';
-                break;
-            case 10:
-                searchQuery += ' inurl:wp- | inurl:wp-content | inurl:plugins | inurl:uploads | inurl:themes | inurl:download';
-                break;
-            case 11:
-                searchQuery += ' inurl:shell | inurl:backdoor | inurl:wso | inurl:cmd | shadow | passwd | boot.ini | inurl:backdoor';
-                break;
-            case 12:
-                searchQuery += ' inurl:readme | inurl:license | inurl:install | inurl:setup | inurl:config';
-                break;
-            case 13:
-                searchQuery += ' inurl:redir | inurl:url | inurl:redirect | inurl:return | inurl:src=http | inurl:r=http';
-                break;
-            case 14:
-                searchQuery += ' ext:action | ext:struts | ext:do';
-                break;
-            case 15:
-                var site = 'site:pastebin.com ' + targetDomain;
-                var url = 'https://www.google.com/search?q=' + encodeURIComponent(site);
-                window.open(url, '_blank');
-                return;
-            case 16:
-                var site = 'site:linkedin.com employees ' + targetDomain;
-                var url = 'https://www.google.com/search?q=' + encodeURIComponent(site);
-                window.open(url, '_blank');
-                return;
-            case 17:
-                var site = 'inurl:"/phpinfo.php" | inurl:".htaccess" | inurl:"/.git" ' + targetDomain + ' -github';
-                var url = 'https://www.google.com/search?q=' + encodeURIComponent(site);
-                window.open(url, '_blank');
-                return;
-            case 18:
-                var site = 'site:*.' + targetDomain;
-                var url = 'https://www.google.com/search?q=' + encodeURIComponent(site);
-                window.open(url, '_blank');
-                return;
-            case 19:
-                var site = 'site:*.*.' + targetDomain;
-                var url = 'https://www.google.com/search?q=' + encodeURIComponent(site);
-                window.open(url, '_blank');
-                return;
-            case 20:
-                var site = 'inurl:wp-content | inurl:wp-includes ' + targetDomain;
-                var url = 'https://www.google.com/search?q=' + encodeURIComponent(site);
-                window.open(url, '_blank');
-                return;
-            case 21:
-                var site = '"*.' + targetDomain + '"';
-                var url = 'https://github.com/search?q=' + encodeURIComponent(site) + '&type=host';
-                window.open(url, '_blank');
-                return;
-            case 22:
-                var url = 'http://' + targetDomain + '/crossdomain.xml';
-                window.open(url, '_blank');
-                return;
-            case 23:
-                var url = 'http://threatcrowd.org/domain.php?domain=' + targetDomain;
-                window.open(url, '_blank');
-                return;
-            case 24:
-                var site = '+inurl:' + targetDomain + ' +ext:swf';
-                var url = 'https://www.google.com/search?q=' + encodeURIComponent(site);
-                window.open(url, '_blank');
-                return;
-            case 25:
-                var site = 'site:' + targetDomain + ' mime:swf';
-                var url = 'https://yandex.com/search/?text=' + encodeURIComponent(site);
-                window.open(url, '_blank');
-                return;
-            case 26:
-                var site = targetDomain;
-                var url = 'https://web.archive.org/cdx/search?url=' + encodeURIComponent(site) + '/&matchType=domain&collapse=urlkey&output=text&fl=original&filter=urlkey:.*swf&limit=100000&_=1507209148310';
-                window.open(url, '_blank');
-                return;
-            case 27:
-                var site = targetDomain;
-                var url = 'https://web.archive.org/cdx/search?url=' + encodeURIComponent(site) + '/&matchType=domain&collapse=urlkey&output=text&fl=original&filter=mimetype:application/x-shockwave-flash&limit=100000&_=1507209148310';
-                window.open(url, '_blank');
-                return;
-            case 28:
-                var site = '.' + targetDomain;
-                var url = 'https://web.archive.org/web/*/(.' + encodeURIComponent(site) + ')';
-                window.open(url, '_blank');
-                return;
-            case 29:
-                var site = targetDomain;
-                var url = 'https://web.archive.org/web/*/' + encodeURIComponent(site) + '/*';
-                window.open(url, '_blank');
-                return;
-            case 30:
-                var url = 'https://crt.sh/?q=%25.' + targetDomain;
-                window.open(url, '_blank');
-                return;
-            case 31:
-                var site = targetDomain;
-                var url = 'https://www.openbugbounty.org/search/?search=' + encodeURIComponent(site) + '&type=host';
-                window.open(url, '_blank');
-                return;
-            case 32:
-                var site = targetDomain;
-                var url = 'https://www.reddit.com/search/?q=' + encodeURIComponent(site) + '&source=recent';
-                window.open(url, '_blank');
-                return;
-            case 33:
-                var site = '+inurl:' + targetDomain + ' +ext:wp- | +inurl:' + targetDomain + ' +ext:wp-content';
-                var url = 'http://wwwb-dedup.us.archive.org:8083/cdx/search?url=' + encodeURIComponent(site) + '/&matchType=domain&collapse=digest&output=text&fl=original,timestamp&filter=urlkey:.*wp[-].*&limit=1000000&xx=';
-                window.open(url, '_blank');
-                return;
-            case 34:
-                var url = 'https://censys.io/ipv4?q=' + targetDomain;
-                window.open(url, '_blank');
-                return;
-            case 35:
-                var url = 'https://censys.io/domain?q=' + targetDomain;
-                window.open(url, '_blank');
-                return;
-            case 36:
-                var url = 'https://censys.io/certificates?q=' + targetDomain;
-                window.open(url, '_blank');
-                return;
-            case 37:
-                var url = 'https://www.shodan.io/search?query=' + targetDomain;
-                window.open(url, '_blank');
-                return;
-            case 38:
-                searchQuery += ' inurl:"/geoserver/ows?service=wfs"';
-                break;
-            case 39:
-                searchQuery += ' intext:"ArcGIS REST Services Directory" intitle:"Folder: /"';
-                break;
-            case 40:
-                searchQuery += ' inurl:/wp-content/uploads/wpo_wcpdf';
-                break;
-            case 41:
-                searchQuery += ' intitle:"index of "main.yml"';
-                break;
-            case 42:
-                searchQuery += ' inurl:/admin.aspx'
-                break
-            case 43:
-                searchQuery += ' inurl:/wp-content/uploads/wpo_wcpdf'
-                break
-            case 44:
-                searchQuery += ' inurl:uploadimage.php'
-                break
-            case 45:
-                searchQuery += ' inurl:*/wp-content/plugins/contact-form-7/'
-                break
-            case 46:
-                searchQuery += ' intitle:index.of conf.php'
-                break
-            case 47:
-                searchQuery += ' intitle:"Sharing API Info"'
-                break
-            case 48:
-                searchQuery += ' intitle:"Index of" inurl:/backup/ "admin.zip"'
-                break
-            case 49:
-                searchQuery += ' intitle:"index of" github-api'
-                break
-            case 50:
-                searchQuery += ' inurl:wp-content/uploads/wcpa_uploads'
-                break
-            case 51:
-                searchQuery += ' inurl:user intitle:"Drupal" intext:"Log in" -"powered by"'
-                break
-            case 52:
-                searchQuery += ' inurl: /libraries/joomla/database/'
-                break
-            case 53:
-                searchQuery += ' inurl:"php?sql=select" ext:php'
-                break
-            case 54:
-                searchQuery += ' inurl:"wp-content" intitle:"index.of" intext:wp-config.php'
-                break
-            case 55 :
-                searchQuery += ' intext:"index of" inurl:json-rpc'
-                break
-            case 56 :
-                searchQuery += ' intitle:"index of" "download.php?file="'
-                break
-            case 57 :
-                searchQuery += ' intext:"index of" intext:"/etc"'
-                break
-            case 58 :
-                searchQuery += ' "sql" "parent" intitle:index.of -injection'
-                break
-            case 59 :
-                searchQuery += ' intitle:index.of conf.mysql'
-                break
-            case 60 :
-                searchQuery += ' intitle:"index of" "users.yml" | "admin.yml" | "config.yml"'
-                break
-            case 61 :
-                searchQuery += ' intitle:"index of" "docker-compose.yml"'
-                break
-            case 62 :
-                searchQuery += ' intext:pom.xml intitle:"index of /"'
-                break
-            case 63 :
-                searchQuery += ' intext:"Index of" intext:"/etc"'
-                break
-            case 64 :
-                searchQuery += ' "sql" "parent" intitle:index.of -injection'
-                break
-            default:
-                alert('Invalid option.');
-                return;
-        }
-
-        var url = 'https://www.google.com/search?q=' + encodeURIComponent(searchQuery);
-        window.open(url, '_blank');
-    }
-
-    /* -------------------------------------------------------------------------
-       New functions: openService (online tools) & modal with command templates
-       ------------------------------------------------------------------------- */
-
-    function _getTarget() {
-      const t = document.getElementById('target').value.trim();
-      if (!t) { alert('Please enter a target domain.'); throw new Error('no-target'); }
-      return t;
-    }
-
-    function openService(name) {
-      let target;
-      try { target = _getTarget(); } catch(e){ return; }
-
-      let url;
-      switch (name) {
-        case 'shodan':
-          url = 'https://www.shodan.io/search?query=' + encodeURIComponent(target);
-          break;
-        case 'censys':
-          url = 'https://censys.io/domain?q=' + encodeURIComponent(target);
-          break;
-        case 'crtsh':
-          url = 'https://crt.sh/?q=%25.' + encodeURIComponent(target);
-          break;
-        case 'ssllabs':
-          // SSL Labs requires the domain as a parameter to start a test UI
-          url = 'https://www.ssllabs.com/ssltest/analyze.html?d=' + encodeURIComponent(target);
-          break;
-        case 'urlscan':
-          url = 'https://urlscan.io/search/#q=' + encodeURIComponent(target);
-          break;
-        case 'virustotal':
-          url = 'https://www.virustotal.com/gui/search/' + encodeURIComponent(target);
-          break;
-        case 'builtwith':
-          url = 'https://builtwith.com/search?q=' + encodeURIComponent(target);
-          break;
-        case 'whois':
-          url = 'https://whois.domaintools.com/' + encodeURIComponent(target);
-          break;
-        case 'securitytrails':
-          url = 'https://securitytrails.com/domain/' + encodeURIComponent(target) + '/history';
-          break;
-        default:
-          alert('Unknown service: ' + name);
-          return;
-      }
-      window.open(url, '_blank');
-    }
-
-    // Modal helpers
-    const modalBackdrop = document.getElementById('modalBackdrop');
-    const cmdList = document.getElementById('cmdList');
-
-    function showCmdModal(tool) {
-      let target;
-      try { target = _getTarget(); } catch(e){ return; }
-
-      // Command templates (for local use only). Keep descriptions short.
-      const templates = {
-        nmap: [
-          { title: 'Quick port scan (top ports)', cmd: `nmap -sV --top-ports 100 ${target}` },
-          { title: 'Full TCP scan (SYN)', cmd: `sudo nmap -sS -p- --min-rate 1000 -T4 ${target}` },
-          { title: 'Service version & scripts', cmd: `nmap -sV -sC -oA nmap_${target} ${target}` }
-        ],
-        nikto: [
-          { title: 'Basic webserver scan', cmd: `nikto -h https://${target} -output nikto_${target}.txt` },
-          { title: 'Probe alternate port', cmd: `nikto -h ${target}:8080` }
-        ],
-        sqlmap: [
-          { title: 'Test a parameter for SQLi (example param=id)', cmd: `sqlmap -u "https://${target}/vuln.php?id=1" --batch --level=3` },
-          { title: 'Scan a whole URL list', cmd: `sqlmap -m urls.txt --batch --level=3 --risk=2` }
-        ],
-        dirb: [
-          { title: 'dirb with common wordlist', cmd: `dirb https://${target} /usr/share/wordlists/dirb/common.txt -o dirb_${target}.txt` },
-          { title: 'ffuf recursive fuzz (example)', cmd: `ffuf -u https://${target}/FUZZ -w /path/wordlist.txt -t 40 -o ffuf_${target}.json` }
-        ],
-        whatweb: [
-          { title: 'WhatWeb fingerprinting', cmd: `whatweb https://${target}` },
-          { title: 'Wappalyzer (CLI) scan', cmd: `wappalyzer https://${target}` }
-        ]
-      };
-
-      const list = templates[tool];
-      if (!list) { alert('No templates for ' + tool); return; }
-
-      // build modal content
-      cmdList.innerHTML = '';
-      list.forEach((item, idx) => {
-        const wrapper = document.createElement('div');
-        wrapper.className = 'cmd';
-        const pre = document.createElement('pre');
-        pre.textContent = item.cmd;
-        const right = document.createElement('div');
-        right.style.display = 'flex';
-        right.style.flexDirection = 'column';
-        right.style.alignItems = 'flex-end';
-        right.style.gap = '6px';
-
-        const title = document.createElement('div');
-        title.style.fontSize = '13px';
-        title.style.color = 'var(--muted)';
-        title.style.marginBottom = '6px';
-        title.textContent = item.title;
-
-        const copyBtn = document.createElement('button');
-        copyBtn.textContent = 'Copy';
-        copyBtn.addEventListener('click', () => {
-          navigator.clipboard.writeText(item.cmd).then(() => {
-            copyBtn.textContent = 'Copied';
-            setTimeout(() => copyBtn.textContent = 'Copy', 1200);
-          }).catch(() => alert('Copy failed'));
-        });
-
-        right.appendChild(title);
-        right.appendChild(copyBtn);
-
-        wrapper.appendChild(pre);
-        wrapper.appendChild(right);
-        cmdList.appendChild(wrapper);
-      });
-
-      // show modal
-      modalBackdrop.style.display = 'flex';
-      modalBackdrop.setAttribute('aria-hidden', 'false');
-    }
-
-    function closeModal() {
-      modalBackdrop.style.display = 'none';
-      modalBackdrop.setAttribute('aria-hidden', 'true');
-    }
-
-    // close modal on backdrop click or ESC
-    modalBackdrop.addEventListener('click', (e) => {
-      if (e.target === modalBackdrop) closeModal();
-    });
-    document.addEventListener('keydown', (e) => {
-      if (e.key === 'Escape') closeModal();
-    });
-
-    // small accessibility: focus first button when tabbing into grid
-    document.getElementById('buttonsGrid').addEventListener('keydown', (e) => {
-      if (e.key === 'Enter' && document.activeElement.classList.contains('search-btn')) {
-        document.activeElement.click();
-      }
-    });
-  </script>
 </body>
 </html>
